@@ -1,0 +1,39 @@
+version: "3.1"
+
+services:
+
+  master:
+    image: sameersbn/postgresql:9.6-2
+    restart: always
+    ports:
+      - 15432:5432
+    volumes:
+      - ./master/postgresql:/var/lib/postgresql
+    environment:
+      - PG_PASSWORD=postgres
+      - DB_NAME=example
+      - DB_USER=user01
+      - DB_PASS=password01
+      - REPLICATION_USER=repluser
+      - REPLICATION_PASS=replpass
+
+  slave:
+    image: sameersbn/postgresql:9.6-2
+    restart: always
+    ports:
+      - 15433:5432
+    depends_on:
+      - master
+    volumes:
+      - ./slave/postgresql:/var/lib/postgresql
+    environment:
+      - PG_PASSWORD=postgres
+      - DB_NAME=example
+      - DB_USER=user01
+      - DB_PASS=password01
+      - REPLICATION_USER=repluser
+      - REPLICATION_PASS=replpass
+      - REPLICATION_MODE=slave
+      - REPLICATION_HOST=master
+      - REPLICATION_PORT=5432
+
